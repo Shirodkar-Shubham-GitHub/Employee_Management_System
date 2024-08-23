@@ -1,0 +1,181 @@
+{% extends "base.html"%}
+
+{% block content %}
+
+<div class="container-fluid bg-dark" style="height: 75px;">
+    <nav class="navbar navbar-expand-lg text-light bg-dark mx-3" style="height: 50px;">
+      <div class="container-fluid">
+        <a class="navbar-brand text-light mt-3 font-weight-bold" style="font-family: tahome;" href="#">Employee Management System</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="font-weight-bold mt-3">
+            <h6 class="card-title text-center my-0 mt-3 ml-5">Welcome, <b class="font-weight-bold">{{request.user.username}}</b><a href="{% url 'logout' %}" class="btn btn-danger mt-0 mx-3">Logout</a></h6>
+            <a href="{% url 'forgot' %}" class="mr-3" style="float:right;font-size:14px;">Change Password?</a>
+        </div>
+      </div>
+    </nav>
+</div>
+
+<div class="container-fluid text-light mt-3">
+  <div class="container">
+    <div class="table-wrapper">
+        <div class="table-title">
+            <div class="row">
+                <div class="col-sm-6">
+                    <h2>Manage Employees</h2>
+                </div>
+                <div class="col-sm-6 mx-1">
+                    <a href="#addEmployeeModal" class="btn btn-success" data-toggle="modal"><i
+                            class="material-icons">&#xE147;</i> <span>Add New Employee</span></a>
+                </div>
+            </div>
+        </div>
+        <table class="table table-striped text-light mt-3">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Address</th>
+                    <th>Phone</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for e in emp %}
+                <tr>
+                    <td>{{ e.name }}</td>
+                    <td>{{ e.email }}</td>
+                    <td>{{ e.address }}</td>
+                    <td>{{ e.phone }}</td>
+                    <td>
+                        <a href="#editEmployeeModal-{{ forloop.counter }}" class="edit" data-toggle="modal"><i class="material-icons"
+                                data-toggle="tooltip" title="edit">&#xE254;</i></a>
+                        <a href="#deleteEmployeeModal-{{ forloop.counter }}" class="delete text-danger" data-toggle="modal"><i class="material-icons"
+                                data-toggle="tooltip" title="delete">&#xE872;</i></a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <!-- Pagination -->
+        <div class="clearfix pt-5">
+            <ul class="pagination">
+                {% if emp.has_previous %}
+                <li class="page-item"><a href="?page=1" class="page-link bg-dark text-light" tabindex="-1"><<</a></li>
+                <li class="page-item"><a href="?page={{emp.previous_page_number}}" class="page-link bg-dark text-light" tabindex="-1">Previous</a></li>
+                {% endif %}
+
+                {% for n in totallist %}
+                <li class="page-item"><a href="?page={{n}}" class="page-link bg-dark text-light">{{n}}</a></li>
+                {% endfor %}
+                {% if emp.has_next %}
+                <li class="page-item"><a href="?page={{emp.next_page_number}}" class="page-link bg-dark text-light">Next</a></li>
+                <li class="page-item"><a href="?page={{last}}" class="page-link bg-dark text-light">>></a></li>
+                {% endif %}
+            </ul>
+        </div>
+        
+    </div>
+</div>
+<!-- Add Modal HTML -->
+<div id="addEmployeeModal" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content bg-dark">
+            <form action="{% url 'add' %}" method="post">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h4 class="modal-title">Add Employee</h4>
+                    <button type="button" class="close text-light" data-dismiss="modal" aria-hidden="true">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Name</label>
+                        <input type="text" name="name" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" name="email" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Address</label>
+                        <textarea class="form-control" name="address" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Phone</label>
+                        <input type="text" name="phone" class="form-control" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <input type="button" class="btn btn-default text-light" data-dismiss="modal" value="Cancel">
+                    <input type="submit" class="btn btn-success" value="Add">
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- Edit Modal HTML -->
+{% for e in emp %}
+<div id="editEmployeeModal-{{ forloop.counter }}" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content bg-dark">
+            <form action="/update/{{ e.id }}" method="post">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h4 class="modal-title">Edit Employee</h4>
+                    <button type="button" class="close text-light" data-dismiss="modal" aria-hidden="true">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Name</label>
+                        <input type="text" name="name" value="{{ e.name }}" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" name="email" value="{{ e.email }}" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Address</label>
+                        <textarea class="form-control" name="address" required>{{ e.address }}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Phone</label>
+                        <input type="text" name="phone" value="{{ e.phone }}" class="form-control" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <input type="button" class="btn btn-default text-light" data-dismiss="modal" value="Cancel">
+                    <input type="submit" class="btn btn-info" value="Update">
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endfor %}
+<!-- Delete Modal HTML -->
+{% for e in emp %}
+<div id="deleteEmployeeModal-{{ forloop.counter }}" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content bg-dark">
+            <form>
+                <div class="modal-header">
+                    <h4 class="modal-title">Delete Employee</h4>
+                    <button type="button" class="close text-light" data-dismiss="modal" aria-hidden="true">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete these Records?</p>
+                    <p class="text-warning"><small>This action cannot be undone.</small></p>
+                </div>
+                <div class="modal-footer">
+                    <input type="button" class="btn btn-default text-light" data-dismiss="modal" value="Cancel">
+                    <a href="{% url 'delete' e.id %}" type="submit" class="btn btn-danger">Delete</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endfor %}
+</div>
+
+
+{% endblock %}

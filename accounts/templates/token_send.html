@@ -1,0 +1,20 @@
+{% extends "base.html"%}
+
+    {% block content %}
+
+
+    
+    <div class="global-container bg-dark">
+        <div class="card login-form bg-dark text-light">
+        <div class="card-body">
+            <h3 class="card-title text-center">We have sent an email to you </h3>
+            <div class="card-text text-center">
+                Please check your mail
+                <p class="font-weight-bold"><a href="{% url 'login_attempt'%}">Sign In</a></p>
+            </div>
+        </div>
+    </div>
+    </div>
+
+
+    {% endblock %}
