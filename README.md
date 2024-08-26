@@ -20,7 +20,7 @@
 
  ## Installation
  #### 1. Clone the Repository:
-    git clone https://github.com/Shirodkar-Shubham-GitHub/Employee_Mgnt_System/tree/master
+    git clone https://github.com/Shirodkar-Shubham-GitHub/Employee_Management_System
     cd EMS
  #### 2. Create a Virtual Environment:
     python -m venv my_env
